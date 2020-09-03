@@ -1,0 +1,8 @@
+x = "text"
+y = 42
+z = 3.141
+
+sum = add y, z
+
+out "lol",
+invalidSum = add x, y

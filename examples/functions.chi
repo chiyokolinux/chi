@@ -1,0 +1,9 @@
+x = 42
+y = 3.141
+z = "Hello, World!"
+
+zt = type z
+@ >>> str
+
+sum = add x, y
+@ >>> 45.141
