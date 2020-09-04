@@ -1,0 +1,30 @@
+#!/usr/bin/python3
+
+from sys import argv, exit, stderr
+import argparse
+from py_compile import PycInvalidationMode, compile, PyCompileError
+
+def main():
+    parser = argparse.ArgumentParser(description='A Python 3 compiler')
+    parser.add_argument('file', type=str, default="main.py",
+                        help='The file to compile')
+    parser.add_argument('-O', dest='optimization', default=-1,
+                        type=int, help='Level of optimization. Can be: -1 (default), 0, 1, 2',
+                        choices=[-1, 0, 1, 2])
+    parser.add_argument('-o', dest='output', default=None,
+                        type=str, help='Target object file location and name')
+    parser.add_argument('-c', dest='check', default=1,
+                        type=int, help='Method for checking if a file is up to date',
+                        choices=[1,2,3])
+    args = parser.parse_args()
+    
+    retval = 0
+    try:
+        compile(args.file, doraise=True, optimize=args.optimization, cfile=args.output, invalidation_mode=PycInvalidationMode(args.check))
+    except PyCompileError as error:
+        retval = 1
+        stderr.write("%s\n" % error.msg)
+    return retval
+
+if __name__ == "__main__":
+    exit(main())
