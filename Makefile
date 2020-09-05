@@ -10,17 +10,19 @@ OBJECTS    = $(CHIOBJ) $(ERROBJ) $(LEXOBJ)
 
 all: $(BINARY)
 
-$(BINARY): $(OBJECTS)
-	chmod +x chi.pyo chi.py
+$(BINARY): $(OBJECTS) runscript
+	chmod +x chi.py chi
 
 %.pyo: %.py
 	$(COMPILER) $(CFLAGS) -o $@ $<
 
+runscript:
+	sed 's+DESTDIRPREFIX+$(DESTDIR)$(PREFIX)+g' chi.run > chi
+
 install: all
-	mkdir -p $(DESTDIR)$(PREFIX)/bin/chilang/__pycache__
-	cp -f $(OBJECTS) $(DESTDIR)$(PREFIX)/bin/chilang/__pycache__
-	cp -f $(BINARY).py $(DESTDIR)$(PREFIX)/bin/chilang
-	ln -sf $(DESTDIR)$(PREFIX)/bin/chilang/$(BINARY).py $(DESTDIR)$(PREFIX)/bin/$(BINARY)
+	mkdir -p $(DESTDIR)$(PREFIX)/bin/chilang
+	cp -f $(OBJECTS) $(BINARY).py $(DESTDIR)$(PREFIX)/bin/chilang
+	cp -f $(BINARY) $(DESTDIR)$(PREFIX)/bin/$(BINARY)
 
 uninstall:
 	rm -rf $(DESTDIR)$(PREFIX)/bin/chilang
@@ -36,7 +38,7 @@ dist: clean
 clean:
 	find . -name '*.pyc' -exec rm --force {} +
 	find . -name '*.pyo' -exec rm --force {} +
-	rm -f $(BINARY)-$(VERSION).tar.gz
+	rm -f $(BINARY)-$(VERSION).tar.gz chi
 
 .PHONY:
 	all install uninstall dist clean
