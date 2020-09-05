@@ -21,7 +21,7 @@ if len(sys.argv) == 1:
 
 file = sys.argv[-1]
 var = {}
-functions = {"out": None, "put": None, "add": None, "concat": None, "type": None, "in": None, "len": None}
+functions = {"out": None, "put": None, "add": None, "concat": None, "type": None, "in": None, "len": None, "conv": None}
 
 
 T_LT = {"type": "symbol", "value": "<"}
@@ -75,6 +75,29 @@ def runFunc(func, args):
 
         ret = {"type": "str", "value": e}
 
+    elif func == "conv":
+        if len(args) != 2:
+            error("Invalid number of arguments", "conv <var> <type> -> <type>")
+        if args[0]["type"] == args[1]["value"]:
+            ret = args[0]
+        else:
+            if args[1]["value"] == "float":
+                try:
+                    ret = {"type": "float", "value": float(args[0]["value"])}
+                except ValueError:
+                    error("Type error", "Cannot convert non-numerical object to float")
+            elif args[1]["value"] == "int":
+                try:
+                    ret = {"type": "int", "value": int(args[0]["value"])}
+                except ValueError:
+                    error("Type error", "Cannot convert non-numerical object to int")
+            elif args[1]["value"] == "str":
+                try:
+                    ret = {"type": "str", "value": str(args[0]["value"])}
+                except ValueError:
+                    error("Type error", "Cannot convert non-representable object to str")
+            else:
+                error("Type error", "Unknown type " + args[1]["value"])
 
     elif func == "type":
         if len(args) > 1  or len(args) == 0:
@@ -296,4 +319,4 @@ try:
 
 
 except KeyboardInterrupt:
-    error("Aborted.", "C^")
+    error("Aborted.", "^C")

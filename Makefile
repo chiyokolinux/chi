@@ -20,8 +20,9 @@ runscript:
 	sed 's+DESTDIRPREFIX+$(DESTDIR)$(PREFIX)+g' chi.run > chi
 
 install: all
-	mkdir -p $(DESTDIR)$(PREFIX)/bin/chilang
-	cp -f $(OBJECTS) $(BINARY).py $(DESTDIR)$(PREFIX)/bin/chilang
+	mkdir -p $(DESTDIR)$(PREFIX)/bin/chilang/__pycache__
+	cp -f $(OBJECTS) $(DESTDIR)$(PREFIX)/bin/chilang/__pycache__
+	cp -f *.py $(DESTDIR)$(PREFIX)/bin/chilang
 	cp -f $(BINARY) $(DESTDIR)$(PREFIX)/bin/$(BINARY)
 
 uninstall:

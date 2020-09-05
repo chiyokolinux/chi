@@ -1,0 +1,9 @@
+x = in
+y = in
+xint = conv x, "int"
+yint = conv y, "int"
+ad = add xint, yint
+co = concat x, y
+
+out "Added:", ad
+out "Concatenated:", co
