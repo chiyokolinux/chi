@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import string
 
 quotes = ["\"", "'"]
@@ -30,11 +29,8 @@ def lexer(line, linenumber):
                     inNumber = False
                     isVar = False
                     for l in e:
-                        if l in string.ascii_letters:
-                            if e.count(".") > 0:
-                                error("Invalid variable name. No dots allowed.")
-                            else:
-                                isVar = True
+                        if l in string.ascii_letters + ":":
+                            isVar = True
 
 
                     if isVar:
@@ -49,10 +45,11 @@ def lexer(line, linenumber):
                             error("Invalid float.")
                         e = ""
                     lexed.append({"value": letter, "type": "symbol"})
+
                 else:
                     if letter == "@":
                 	    break
-                    if not letter in string.ascii_letters + "_":
+                    if not letter in string.ascii_letters + "_:":
                         lexed.append({"value":e, "type":"var"})
                         if not letter in quotes:
                             lexed.append({"value":letter, "type":"symbol"})
@@ -66,6 +63,7 @@ def lexer(line, linenumber):
     for e in _lexed:
         if e["value"].strip() == "":
             continue
+
         lexed.append(e)
 
     return lexed

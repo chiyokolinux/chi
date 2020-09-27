@@ -1,16 +1,16 @@
-#!/usr/bin/env python3
 import os
 import sys
 import string
+import subprocess
 
 from lexer import lexer
 from error import error, setFile, setVersion, setLineNumber
 
 from termcolor import *
-
+from glob import glob
 
 # META STUFF
-VERSION = "1.0"
+VERSION = "1.0.2"
 setVersion(VERSION)
 setLineNumber(0)
 
@@ -21,8 +21,8 @@ if len(sys.argv) == 1:
 
 file = sys.argv[-1]
 var = {}
-functions = {"out": None, "put": None, "add": None, "concat": None, "type": None, "in": None, "len": None, "conv": None}
-
+functions = {"use": None, "out": None, "put": None, "add": None, "concat": None, "type": None, "in": None, "len": None, "conv": None, "shell": None, "readfile": None, "writefile": None}
+lib = ["/home/mint/Desktop/ChiyokoLinux/Chi/lib"]
 
 T_LT = {"type": "symbol", "value": "<"}
 T_GT = {"type": "symbol", "value": ">"}
@@ -31,7 +31,29 @@ T_EQ = {"type": "symbol", "value": "="}
 
 
 def runFunc(func, args):
+    #global functions
     ret = {"type": "none", "value": "none"}
+
+    if func in functions:
+        if functions[func] == None:
+            pass
+        elif type(functions[func]) == list:
+            LN = 0
+            INDENT = 0
+            fcode = functions[func]
+            while LN != len(fcode)-1:
+                setLineNumber(LN+1)
+                line = fcode[LN]
+                line = lexer(line.strip(), LN)
+
+                LN += 1
+                if line == [] or line[0] == {"type": "symbol", "value": "@"}:
+                    continue
+
+
+                parser(line)
+            return ret
+
     if func == "out":
         for arg in args:
             print(arg["value"] + " ", end="")
@@ -42,17 +64,37 @@ def runFunc(func, args):
             print(arg["value"], end="")
         print()
 
+    elif func == "use":
+        if args[0]["type"] != "str":
+            error("Invalid type", args[0]["type"]+" but expected <str>")
+        fn = os.path.basename(args[0]["value"])
+        _f = []
+
+        #print("! Loading all modules from", fn)
+        for l in lib:
+            for root, sub, files in os.walk(os.path.abspath("lib"+os.sep+fn)):
+                for file in files:
+                    if file[-4:] != ".chi":
+                        continue
+
+                    fulldir = os.sep.join([l, fn]+sub+[file])
+                    fdir = os.sep.join([fn]+sub+[file[:-4]])
+                    _fn = ":".join(fdir.split(os.sep))
+
+                    with open(fulldir) as ffile:
+                        _f = ffile.read().split("\n")
+                    functions[_fn] = _f
 
 
     elif func == "add":
         if len(args) <= 1:
-            error("Invalid number of arguments", "add <var> <var> ... -> float/int")
+            error("Invalid number of arguments", "add <var> <var> ... -> <float/int>")
 
         e = 0
         isFloat = False
         for arg in args:
             if arg["type"] != "float" and arg["type"] != "int":
-                error("Invalid type", arg["type"])
+                error("Invalid type", arg["type"]+" but expected float or int")
             if arg["type"] == "float":
                 isFloat = True
             e += float(arg["value"])
@@ -68,7 +110,7 @@ def runFunc(func, args):
 
     elif func == "concat":
         if len(args) == 0:
-            error("Invalid number of arguments", "concat <var> <var> ... -> str")
+            error("Invalid number of arguments", "concat <var> <var> ... -> <str>")
         e = ""
         for arg in args:
             e += arg["value"]
@@ -99,15 +141,16 @@ def runFunc(func, args):
             else:
                 error("Type error", "Unknown type " + args[1]["value"])
 
+
     elif func == "type":
         if len(args) > 1  or len(args) == 0:
-            error("Invalid number of arguments", "type <var> -> str")
+            error("Invalid number of arguments", "type <var> -> <str>")
 
         ret = {"type": "str", "value": args[0]["type"]}
 
     elif func == "in":
         if len(args) > 1:
-            error("Invalid number of arguments", "in (text) -> str")
+            error("Invalid number of arguments", "in (text) -> <str>")
         if len(args) == 1:
             t = args[0]["value"]
         else:
@@ -119,9 +162,92 @@ def runFunc(func, args):
 
     elif func == "len":
         if len(args) == 0 or len(args) > 1:
-            error("Invalid number of arguments", "len <str> -> int")
+            error("Invalid number of arguments", "len <str> -> <int>")
 
         ret = {"type": "int", "value": str(len(args[0]["value"]))}
+
+    elif func == "shell":
+        a = args[0]
+        if a["type"] != "str":
+            error("Invalid type", args[0]["type"]+" but expected <str>")
+        sp = subprocess.Popen(a["value"].split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        stdout, stderr = sp.communicate()
+
+        ret = {"type": "str", "value": stdout.decode()}
+
+    elif func == "readfile":
+        if len(args) != 1:
+            error("Invalid number of arguments", "readfile <str>")
+
+        if args[0]["type"] != "str":
+            error("Invalid type", args[0]["type"]+" but expected <str>")
+
+        filename = args[0]["value"]
+        try:
+            with open(os.path.abspath(filename)) as ff:
+                ret = {"type": "str", "value": ff.read()}
+
+        except FileNotFoundError:
+            error("File not found", filename)
+
+    elif func == "writefile": # writefile <filename> <content>
+        if len(args) != 2:
+            error("Invalid number of arguments", "writefile <str> <str>")
+
+        if args[0]["type"] != "str":
+            error("Invalid type", args[0]["type"]+" but expected <str>")
+        if args[1]["type"] != "str":
+            error("Invalid type", args[1]["type"]+" but expected <str>")
+
+        filename = args[0]["value"]
+        content = args[1]["value"]
+
+        try:
+            with open(os.path.abspath(filename), "w+") as ff:
+                ff.write(content)
+
+        except FileNotFoundError:
+            error("File not found", filename)
+
+        # Return none
+
+    elif func == "appendfile": # appendfile <filename> <content>
+        if len(args) != 2:
+            error("Invalid number of arguments", "appendfile <str> <str>")
+
+        if args[0]["type"] != "str":
+            error("Invalid type", args[0]["type"]+" but expected <str>")
+        if args[1]["type"] != "str":
+            error("Invalid type", args[1]["type"]+" but expected <str>")
+
+        filename = args[0]["value"]
+        content = args[1]["value"]
+
+        try:
+            with open(os.path.abspath(filename), "a") as ff:
+                ff.write(content)
+
+        except FileNotFoundError:
+            error("File not found", filename)
+
+        # Return none
+
+    elif func == "appendfile": # clearfile <filename>
+        if len(args) != 1:
+            error("Invalid number of arguments", "clearfile <str>")
+
+        filename = args[0]["value"]
+
+        try:
+            with open(os.path.abspath(filename), "w+") as ff:
+                pass
+
+        except FileNotFoundError:
+            error("File not found", filename)
+
+        # Return none
+
+
 
     return ret
 
@@ -205,28 +331,28 @@ def parser(line):
 
             elif ifargs == [T_GT, T_EQ]:
                 if a["type"] != "float" and a["type"] != "int":
-                    error("Invalid type", a["type"])
+                    error("Invalid type", a["type"]+" but expected float or int")
 
                 if float(a["value"]) >= float(b["value"]):
                     IF = True
 
             elif ifargs == [T_LT, T_EQ]:
                 if a["type"] != "float" and a["type"] != "int":
-                    error("Invalid type", a["type"])
+                    error("Invalid type", a["type"]+" but expected float or int")
 
                 if float(a["value"]) <= float(b["value"]):
                     IF = True
 
             elif ifargs == [T_GT]:
                 if a["type"] != "float" and a["type"] != "int":
-                    error("Invalid type", a["type"])
+                    error("Invalid type", a["type"]+" but expected float or int")
 
                 if float(a["value"]) > float(b["value"]):
                     IF = True
 
             elif ifargs == [T_LT]:
                 if a["type"] != "float" and a["type"] != "int":
-                    error("Invalid type", a["type"])
+                    error("Invalid type", a["type"]+" but expected float or int")
 
                 if float(a["value"]) < float(b["value"]):
                     IF = True
@@ -245,7 +371,6 @@ def parser(line):
             for _line in code[LN:]:
                 IF_ENDLN += 1
                 line = lexer(_line.strip(), 0)
-                #print(">>>",line)
                 if {"type": "symbol", "value": "{"} in line:
                     _INDENT += 1
                 elif {"type": "symbol", "value": "}"} in line:

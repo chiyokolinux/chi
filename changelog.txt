@@ -1,0 +1,9 @@
+Version 1.0.0 / 1.0.1
+    Started the Chi Programming Language project
+
+Version 1.0.2
+    Added <conv> function
+    Added file operations (readfile, writefile, appendfile, clearfile)
+    Added <shell> function
+    Updated the <use> function
+        * You can now import a module and use its submodules!
