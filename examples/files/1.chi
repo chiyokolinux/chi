@@ -1,4 +1,4 @@
-file = "/home/mint/Desktop/ChiyokoLinux/Chi/examples/files/testfile.txt"
+file = "/my/path/examples/files/testfile.txt"
 
 content = readfile file
 out "TextFile:", content
