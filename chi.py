@@ -88,7 +88,7 @@ def runFunc(func, args):
 
     elif func == "add":
         if len(args) <= 1:
-            error("Invalid number of arguments", "add <var> <var> ... -> <float/int>")
+            error("Invalid number of arguments", "add <float/int> <float/int> (float/int) ... -> <float/int>")
 
         e = 0
         isFloat = False
@@ -109,8 +109,8 @@ def runFunc(func, args):
         ret = {"type": t, "value": str(e)}
 
     elif func == "concat":
-        if len(args) == 0:
-            error("Invalid number of arguments", "concat <var> <var> ... -> <str>")
+        if len(args) <= 1:
+            error("Invalid number of arguments", "concat <*> <*> (*) ... -> <str>")
         e = ""
         for arg in args:
             e += arg["value"]
@@ -119,7 +119,7 @@ def runFunc(func, args):
 
     elif func == "conv":
         if len(args) != 2:
-            error("Invalid number of arguments", "conv <var> <type> -> <type>")
+            error("Invalid number of arguments", "conv <*> <type> -> <type>")
         if args[0]["type"] == args[1]["value"]:
             ret = args[0]
         else:
@@ -232,7 +232,7 @@ def runFunc(func, args):
 
         # Return none
 
-    elif func == "appendfile": # clearfile <filename>
+    elif func == "clearfile": # clearfile <filename>
         if len(args) != 1:
             error("Invalid number of arguments", "clearfile <str>")
 
