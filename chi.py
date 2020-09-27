@@ -22,7 +22,7 @@ if len(sys.argv) == 1:
 file = sys.argv[-1]
 var = {}
 functions = {"use": None, "out": None, "put": None, "add": None, "concat": None, "type": None, "in": None, "len": None, "conv": None, "shell": None, "readfile": None, "writefile": None}
-lib = ["/home/mint/Desktop/ChiyokoLinux/Chi/lib"]
+lib = [os.getcwd()+os.sep+"lib"]
 
 T_LT = {"type": "symbol", "value": "<"}
 T_GT = {"type": "symbol", "value": ">"}
