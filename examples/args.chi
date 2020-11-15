@@ -1,0 +1,2 @@
+use "logging"
+logging:initlog

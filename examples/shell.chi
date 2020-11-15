@@ -1,0 +1,3 @@
+text = in "Console: "
+stdout = shell text
+out "The shell answered:", stdout

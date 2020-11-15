@@ -1,0 +1,5 @@
+use "time"
+d = datetime "%D.%M.%Y %h:%m:%s.%z"
+out d
+d = unixtime
+out d

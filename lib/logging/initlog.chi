@@ -1,0 +1,4 @@
+@*args: str filename
+out "lol"
+@clearfile "newest.log"
+
