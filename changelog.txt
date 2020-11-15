@@ -7,3 +7,20 @@ Version 1.0.2
     Added <shell> function
     Updated the <use> function
         * You can now import a module and use its submodules!
+
+Version 1.1.0
+    Rewrote parser and other stuff
+    Added while, for and if statements
+        -> Nested while, for and if statements not yet possible
+        -> For loop variable still buggy
+        -> If statements work, but without elseif or else statements
+
+    Added break statement for while and for loops
+    Added booleans
+    Added x++ and x-- features
+
+    Changed use function (Before: use "myModule"    Now: use myModule)
+        -> Doesn't work yet but in the next version
+
+    Fixed a lot of stupid problems
+    Added some comments

@@ -2,7 +2,7 @@ import string
 
 quotes = ["\"", "'"]
 
-def lexer(line, linenumber):
+def lexer(line, stderr):
     line += " none"
     e = ""
     lexed = []
@@ -42,7 +42,7 @@ def lexer(line, linenumber):
                         elif ec == 1:
                             lexed.append({"value": e, "type": "float"})
                         else:
-                            error("Invalid float.")
+                            stderr.error("Invalid float", e)
                         e = ""
                     lexed.append({"value": letter, "type": "symbol"})
 
@@ -50,7 +50,11 @@ def lexer(line, linenumber):
                     if letter == "@":
                 	    break
                     if not letter in string.ascii_letters + "_:":
-                        lexed.append({"value":e, "type":"var"})
+                        if e == "true" or e == "false":
+                            lexed.append({"value":e, "type":"bool"})
+                        else:
+                            lexed.append({"value":e, "type":"var"})
+                            
                         if not letter in quotes:
                             lexed.append({"value":letter, "type":"symbol"})
                         e = ""
@@ -61,7 +65,7 @@ def lexer(line, linenumber):
     lexed = []
 
     for e in _lexed:
-        if e["value"].strip() == "":
+        if e["value"].strip() == "" and e["type"] != "str":
             continue
 
         lexed.append(e)

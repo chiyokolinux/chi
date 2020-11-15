@@ -1,23 +1,25 @@
-#!/usr/bin/env python3
 import sys
 from termcolor import *
 
-def setFile(_file):
-    global file
-    file = _file
+class Error:
+    def __init__(self, version, file, lineNumber):
+        self.version = version
+        self.file = file
+        self.lineNumber = lineNumber
+    
+    def setFile(self, file):
+        self.file = file
+    
+    def setLineNumber(self, lineNumber):
+        self.lineNumber = lineNumber
 
-def setVersion(_version):
-    global version
-    version = _version
-
-def setLineNumber(_ln):
-    global LineNumber
-    LineNumber = _ln
-
-
-
-def error(text, val):
-    cprint("\nChi {"+version+"} <"+str(file)+"> | Line "+str(LineNumber), "yellow", None, ["bold"])
-    cprint(text, "red", None, ["bold"])
-    cprint("    " + val, "red", None, ["bold"])
-    sys.exit()
+    def error(self, text, val):
+        text = str(text)
+        val = str(val)
+        if self.file == None and self.lineNumber == None:
+            cprint("\nChi {"+self.version+"} "+str(self.file if self.file != None else "Startup"), "yellow", None, ["bold"])
+        else:
+            cprint("\nChi {"+self.version+"} <"+str(self.file if self.file != None else "Startup")+"> | Line "+str(self.lineNumber), "yellow", None, ["bold"])
+        cprint(text, "red", None, ["bold"])
+        cprint("    " + val, "red", None, ["bold"])
+        sys.exit()

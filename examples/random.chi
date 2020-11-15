@@ -1,0 +1,17 @@
+x = randint 0, 10
+out x
+
+x = randfloat 0, 10
+out x
+
+x = randchar
+out x
+
+x = randupperchar
+out x
+
+x = randlowerchar
+out x
+
+x = randascii
+out x
