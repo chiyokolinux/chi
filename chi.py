@@ -9,7 +9,7 @@ from termcolor import *
 from importlib import import_module
 from glob import glob
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 error = Error(VERSION, None, None)
 var = {}
 lib = os.getcwd() + os.sep + "lib" + os.sep
