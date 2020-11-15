@@ -8,8 +8,10 @@ from condition import Cond
 from termcolor import *
 from importlib import import_module
 from glob import glob
+from random import *
+import subprocess
 
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 error = Error(VERSION, None, None)
 var = {}
 lib = os.getcwd() + os.sep + "lib" + os.sep
@@ -103,7 +105,7 @@ def runFunc(func, args):
 
     elif func == "use":
         if args[0]["type"] != "str":
-            error.error("Invalid type", args[0]["type"]+" but expected <str>")
+            error.error("Invalid type", "got "+args[0]["type"]+" but expected <str>")
         fn = os.path.basename(args[0]["value"])
         _f = []
 
@@ -145,7 +147,7 @@ def runFunc(func, args):
         isFloat = False
         for arg in args:
             if arg["type"] != "float" and arg["type"] != "int":
-                error.error("Invalid type", arg["type"]+" but expected float or int")
+                error.error("Invalid type", "got "+arg["type"]+" but expected float or int")
             if arg["type"] == "float":
                 isFloat = True
             e += float(arg["value"])
@@ -220,7 +222,7 @@ def runFunc(func, args):
     elif func == "shell":
         a = args[0]
         if a["type"] != "str":
-            error.error("Invalid type", args[0]["type"]+" but expected <str>")
+            error.error("Invalid type", "got "+args[0]["type"]+" but expected <str>")
         sp = subprocess.Popen(a["value"].split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         stdout, stderr = sp.communicate()
 
@@ -231,7 +233,7 @@ def runFunc(func, args):
             error.error("Invalid number of arguments", "readfile <str>")
 
         if args[0]["type"] != "str":
-            error.error("Invalid type", args[0]["type"]+" but expected <str>")
+            error.error("Invalid type", "got "+args[0]["type"]+" but expected <str>")
 
         filename = args[0]["value"]
         try:
@@ -246,9 +248,9 @@ def runFunc(func, args):
             error.error("Invalid number of arguments", "writefile <str> <str>")
 
         if args[0]["type"] != "str":
-            error.error("Invalid type", args[0]["type"]+" but expected <str>")
+            error.error("Invalid type", "got "+args[0]["type"]+" but expected <str>")
         if args[1]["type"] != "str":
-            error.error("Invalid type", args[1]["type"]+" but expected <str>")
+            error.error("Invalid type", "got "+args[1]["type"]+" but expected <str>")
 
         filename = args[0]["value"]
         content = args[1]["value"]
@@ -267,9 +269,9 @@ def runFunc(func, args):
             error.error("Invalid number of arguments", "appendfile <str> <str>")
 
         if args[0]["type"] != "str":
-            error.error("Invalid type", args[0]["type"]+" but expected <str>")
+            error.error("Invalid type", "got "+args[0]["type"]+" but expected <str>")
         if args[1]["type"] != "str":
-            error.error("Invalid type", args[1]["type"]+" but expected <str>")
+            error.error("Invalid type", "got "+args[1]["type"]+" but expected <str>")
 
         filename = args[0]["value"]
         content = args[1]["value"]
@@ -303,9 +305,9 @@ def runFunc(func, args):
             error.error("Invalid number of arguments", "randint <int> <int> -> int")
         
         if args[0]["type"] != "int":
-            error.error("Invalid type", args[0]["type"]+" but expected <int>")
+            error.error("Invalid type", "got "+args[0]["type"]+" but expected <int>")
         if args[1]["type"] != "int":
-            error.error("Invalid type", args[1]["type"]+" but expected <int>")
+            error.error("Invalid type", "got "+args[1]["type"]+" but expected <int>")
 
         r = randint(int(args[0]["value"]), int(args[1]["value"]))
         ret = {"value": str(r), "type": "int"}
@@ -315,9 +317,9 @@ def runFunc(func, args):
             error.error("Invalid number of arguments", "randfloat <float/int> <float/int> -> float")
         
         if args[0]["type"] != "int" and args[0]["type"] != "float":
-            error.error("Invalid type", args[0]["type"]+" but expected <float/int>")
+            error.error("Invalid type", "got "+args[0]["type"]+" but expected <float/int>")
         if args[1]["type"] != "int" and args[1]["type"] != "float":
-            error.error("Invalid type", args[1]["type"]+" but expected <float/int>")
+            error.error("Invalid type", "got "+args[1]["type"]+" but expected <float/int>")
 
         r = uniform(float(args[0]["value"]), float(args[1]["value"]))
         ret = {"value": str(r), "type": "float"}
@@ -369,7 +371,7 @@ def runFunc(func, args):
             # Millisecond   z
             
             if args[0]["type"] != "str":
-                error.error("Invalid type", args[0]["type"]+" but expected <str>")
+                error.error("Invalid type", "got "+args[0]["type"]+" but expected <str>")
                 
             d = args[0]["value"]
             d = d.replace("%Y", str(datetime.datetime.now().year))
@@ -394,9 +396,9 @@ def runFunc(func, args):
             error.error("Invalid number of arguments", "round <float> <int> -> float/int")
             
         if args[0]["type"] != "float":
-            error.error("Invalid type", args[0]["type"]+" but expected <float>")
+            error.error("Invalid type", "got "+args[0]["type"]+" but expected <float>")
         if args[1]["type"] != "int":
-            error.error("Invalid type", args[1]["type"]+" but expected <int>")
+            error.error("Invalid type", "got "+args[1]["type"]+" but expected <int>")
         
         
         if args[1]["value"] == "0":

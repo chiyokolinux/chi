@@ -5,6 +5,7 @@ BINARY     = chi
 CHIOBJ     = chi.pyo
 ERROBJ     = error.pyo
 LEXOBJ     = lexer.pyo
+CONOBJ     = condition.pyo
 
 OBJECTS    = $(CHIOBJ) $(ERROBJ) $(LEXOBJ)
 
