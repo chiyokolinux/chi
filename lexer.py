@@ -48,7 +48,7 @@ def lexer(line, stderr):
 
                 else:
                     if letter == "@":
-                	    break
+                            break
                     if not letter in string.ascii_letters + "_:":
                         if e == "true" or e == "false":
                             lexed.append({"value":e, "type":"bool"})
